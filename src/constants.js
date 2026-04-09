@@ -1,6 +1,3 @@
-import React from 'react';
-import BookCard from '../components/BookCard';
-
 export const mockBooks = [
   // Fiction (English)
   { id: 1, title: 'The Silent Patient', author: 'Alex Michaelides', genre: 'Mystery/Thriller', language: 'English', cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400&h=600' },
@@ -31,53 +28,3 @@ export const mockBooks = [
   { id: 16, title: 'Ponniyin Selvan', author: 'Kalki Krishnamurthy', genre: 'Standard', language: 'Tamil', cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400&h=600' },
   { id: 17, title: 'Chidambara Rahasiyam', author: 'K. P. Poornachandra Tejaswi', genre: 'Mystery/Thriller', language: 'Kannada', cover: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&q=80&w=400&h=600' }
 ];
-
-export default function Home() {
-  // Group books by Genre dynamically
-  const categories = mockBooks.reduce((acc, book) => {
-    if (!acc[book.genre]) acc[book.genre] = [];
-    acc[book.genre].push(book);
-    return acc;
-  }, {});
-
-  // Group books by Language statically for a designated shelf
-  const languages = mockBooks.reduce((acc, book) => {
-    if (book.language !== 'English') {
-      if (!acc[book.language]) acc[book.language] = [];
-      acc[book.language].push(book);
-    }
-    return acc;
-  }, {});
-
-  return (
-    <div className="home-dashboard">
-      {Object.entries(categories).map(([genre, books]) => (
-        <section key={genre} className="category-shelf">
-          <div className="shelf-header">
-            <h3>{genre}</h3>
-            <button className="text-btn">View All</button>
-          </div>
-          <div className="books-grid">
-            {books.map(book => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
-        </section>
-      ))}
-
-      {Object.entries(languages).map(([language, books]) => (
-        <section key={language} className="category-shelf language-shelf">
-          <div className="shelf-header">
-            <h3>Top in {language}</h3>
-            <button className="text-btn">View All</button>
-          </div>
-          <div className="books-grid">
-            {books.map(book => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-}

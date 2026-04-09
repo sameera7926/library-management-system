@@ -16,10 +16,8 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  // Entrance animation for separate route component
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
-    // Slight delay so the entrance animates smoothly after Splash unmounts
     setTimeout(() => setIsVisible(true), 100);
   }, []);
 
@@ -28,13 +26,19 @@ export default function Login() {
     setError('');
     setSuccessMsg('');
     try {
+      let user;
       if (isLogin) {
-        loginUser(email, password);
+        user = loginUser(email, password);
       } else {
         registerUser(name, email, password);
-        loginUser(email, password);
+        user = loginUser(email, password);
       }
-      navigate('/dashboard');
+      
+      if (!user.onboardingCompleted) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -58,11 +62,10 @@ export default function Login() {
     <div className="login-section page-entrance">
       <div className={`login-card ${isVisible ? 'visible' : ''}`}>
         
-        {/* Branding Headers */}
         <div className="login-header">
           <img src={logoUrl} alt="Readx Logo" className="login-card-logo" />
           <h2>{isLogin ? 'Login to Readx' : 'Join Readx'}</h2>
-          <p>Every login opens a new chapter</p>
+          <p>{isLogin ? 'Every login opens a new chapter' : 'Get started with an account on readx'}</p>
         </div>
 
         <div className="auth-toggle">
@@ -71,14 +74,14 @@ export default function Login() {
             className={isLogin ? 'active' : ''} 
             onClick={() => { setIsLogin(true); setError(''); setSuccessMsg(''); }}
           >
-            Existing User
+            Log in
           </button>
           <button 
             type="button"
             className={!isLogin ? 'active' : ''} 
             onClick={() => { setIsLogin(false); setError(''); setSuccessMsg(''); }}
           >
-            New User
+            Sign up
           </button>
         </div>
 
@@ -148,6 +151,13 @@ export default function Login() {
           <button type="submit" className="submit-btn" style={{marginTop: '1rem'}}>
             {isLogin ? 'Sign In' : 'Create Account'}
           </button>
+
+          {!isLogin && (
+            <div className="signup-footer-links">
+               <button type="button" className="text-btn" onClick={() => setIsLogin(true)}>Have any account? Log in</button>
+               <a href="#terms" className="text-btn-subdued">Terms and conditions</a>
+            </div>
+          )}
         </form>
 
         <div className="social-login-divider">

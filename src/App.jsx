@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Splash from './Splash';
 import Login from './Login';
+import Onboarding from './pages/Onboarding';
 import Dashboard from './Dashboard';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<Home />} />
           <Route path="favorites" element={<Favorites />} />

@@ -7,7 +7,6 @@ export default function Bookmarks() {
 
   useEffect(() => {
     loadBookmarks();
-  }, []);
 
   const loadBookmarks = () => {
     setBookmarks(getItems(dbOptions.bookmarks));

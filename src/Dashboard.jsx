@@ -1,87 +1,91 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, Heart, Bookmark, User, LogOut } from 'lucide-react';
+import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
+import { LogOut, BookOpen, Clock, Headphones, ShoppingCart, User, Search } from 'lucide-react';
 import { getCurrentUser, logoutUser } from './db';
 import logoUrl from './assets/logo.jpeg';
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const activeUser = getCurrentUser();
-    if (!activeUser) {
-      navigate('/');
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      navigate('/login');
     } else {
-      setUser(activeUser);
+      setUser(currentUser);
     }
   }, [navigate]);
 
   const handleLogout = () => {
     logoutUser();
-    navigate('/');
-  };
-
-  // Generate dynamic title based on location
-  const getPageTitle = () => {
-    const path = location.pathname.replace('/dashboard', '');
-    if (path.includes('favorites')) return 'Favorites';
-    if (path.includes('bookmarks')) return 'Bookmarks';
-    if (path.includes('account')) return 'Account & Settings';
-    return 'Library';
+    navigate('/login');
   };
 
   if (!user) return null;
 
   return (
-    <div className="dashboard-layout">
-      {/* Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <img src={logoUrl} alt="Readx Logo" className="sidebar-logo" />
-        </div>
-        
-        <nav className="sidebar-nav">
-          <NavLink to="/dashboard" end className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
-            <BookOpen size={20} />
-            <span>Home</span>
-          </NavLink>
-          <NavLink to="/dashboard/favorites" className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
-            <Heart size={20} />
-            <span>Favorites</span>
-          </NavLink>
-          <NavLink to="/dashboard/bookmarks" className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
-            <Bookmark size={20} />
-            <span>Bookmarks</span>
-          </NavLink>
-        </nav>
-
-        <div className="sidebar-footer">
-          <NavLink to="/dashboard/account" className={({isActive}) => isActive ? 'nav-link active' : 'nav-link'}>
-            <User size={20} />
-            <span>Account</span>
-          </NavLink>
-          <button className="nav-link logout-btn" onClick={handleLogout}>
-            <LogOut size={20} />
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
+    <div className="dashboard-layout dashboard-entrance dashboard-bg">
+      <div className="dashboard-overlay"></div>
+      
       <div className="main-content">
+        {/* Top Header with Search */}
         <header className="topbar">
-          <h2>{getPageTitle()}</h2>
+          <div className="topbar-search-container">
+            <h2>Choose your book</h2>
+            <div className="search-box">
+              <Search className="search-icon" size={20} />
+              <input type="text" placeholder="Search your book..." className="search-input" />
+            </div>
+          </div>
+          
           <div className="user-profile-badge">
             <div className="avatar">{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>
-            <span>{user.name || user.email.split('@')[0]}</span>
+            <span>{user.name || 'User'}</span>
+            <button onClick={handleLogout} className="logout-icon-btn" title="Logout">
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 
-        <main className="content-scroll-area">
+        {/* Scrollable Main Area */}
+        <main className="content-scroll-area pb-spacing">
           <Outlet />
         </main>
+
+        {/* Bottom Task Bar Navigation */}
+        <nav className="bottom-task-bar">
+           <img src={logoUrl} alt="Readx" className="task-bar-logo" />
+           
+           <div className="task-nav-links">
+             <Link to="/dashboard" className={`task-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
+               <BookOpen size={24} />
+               <span>Books</span>
+             </Link>
+             
+             {/* Mock placeholder routes just redirecting safely for now */}
+             <div className="task-link disabled">
+               <Clock size={24} />
+               <span>Tracking</span>
+             </div>
+             
+             <div className="task-link disabled">
+               <Headphones size={24} />
+               <span>Listening</span>
+             </div>
+
+             <div className="task-link disabled">
+               <ShoppingCart size={24} />
+               <span>Cart</span>
+             </div>
+
+             <Link to="/dashboard/account" className={`task-link ${location.pathname === '/dashboard/account' ? 'active' : ''}`}>
+               <User size={24} />
+               <span>Profile</span>
+             </Link>
+           </div>
+        </nav>
       </div>
     </div>
   );

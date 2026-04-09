@@ -25,7 +25,8 @@ export const registerUser = (name, email, password) => {
   if (users.find(u => u.email === email)) {
     throw new Error('User already exists');
   }
-  const newUser = { id: Date.now(), name, email, password };
+  // New users have onboardingCompleted = false
+  const newUser = { id: Date.now(), name, email, password, onboardingCompleted: false, preferences: {} };
   users.push(newUser);
   localStorage.setItem(dbOptions.users, JSON.stringify(users));
   return newUser;
@@ -49,6 +50,25 @@ export const logoutUser = () => {
 export const getCurrentUser = () => {
   const user = localStorage.getItem(dbOptions.currentUser);
   return user ? JSON.parse(user) : null;
+};
+
+export const updateUserPreferences = (userId, preferences) => {
+  const users = JSON.parse(localStorage.getItem(dbOptions.users) || '[]');
+  const userIndex = users.findIndex(u => u.id === userId);
+  
+  if (userIndex > -1) {
+    users[userIndex].preferences = preferences;
+    users[userIndex].onboardingCompleted = true;
+    localStorage.setItem(dbOptions.users, JSON.stringify(users));
+    
+    // Also update the active session
+    const currentUser = getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      currentUser.preferences = preferences;
+      currentUser.onboardingCompleted = true;
+      localStorage.setItem(dbOptions.currentUser, JSON.stringify(currentUser));
+    }
+  }
 };
 
 // Data Operations
